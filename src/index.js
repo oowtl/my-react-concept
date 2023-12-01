@@ -11,9 +11,14 @@ import {
 
 // pages
 import App from "./App";
+import UseStatePages from "./pages/UseStatePages";
 
 const router = createBrowserRouter(
-  createRoutesFromElements(<Route path="/" element={<App />}></Route>)
+  createRoutesFromElements(
+    <Route path="/" element={<App />}>
+      <Route path="useState" element={<UseStatePages />} />
+    </Route>
+  )
 );
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
