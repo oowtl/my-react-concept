@@ -27,7 +27,7 @@ export default function BasicUseState() {
 
       <h3>String</h3>
       <h4>Name : {name}</h4>
-      <input type="text" onChange={handleChangeName} />
+      <input type="text" onChange={handleChangeName} value={name}/>
     </div>
   );
 }
