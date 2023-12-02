@@ -1,30 +1,16 @@
-import { React, useState } from "react";
+import { React } from "react";
+import {Outlet} from 'react-router-dom';
 
-import BasicUseState from "../../components/UseStateComponents/BasicUseState";
 
 export default function UseStatePages() {
-  const [guide, setGuide] = useState(null);
 
-  const handleClickGuide = (guide, e) => {
-    e.preventDefault();
-    setGuide(guide);
-  };
 
   return (
     <div>
       <h1>UseState</h1>
 
-      <ul>
-        <li
-          onClick={(e) => {
-            handleClickGuide("BasicUseState", e);
-          }}
-        >
-          BasicUseState
-        </li>
-      </ul>
-
-      {guide === "BasicUseState" && <BasicUseState />}
+      <hr />
+      <Outlet />
     </div>
   );
 }
