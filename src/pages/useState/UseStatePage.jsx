@@ -1,6 +1,6 @@
 import { React, useState } from "react";
 
-import BasicUseState from "../components/UseStateComponents/BasicUseState";
+import BasicUseState from "../../components/UseStateComponents/BasicUseState";
 
 export default function UseStatePages() {
   const [guide, setGuide] = useState(null);

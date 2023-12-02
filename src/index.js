@@ -3,23 +3,11 @@ import ReactDOM from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
 
 import {
-  RouterProvider,
-  createBrowserRouter,
-  createRoutesFromElements,
-  Route,
+  RouterProvider
 } from "react-router-dom";
 
-// pages
-import App from "./App";
-import UseStatePages from "./pages/UseStatePages";
 
-const router = createBrowserRouter(
-  createRoutesFromElements(
-    <Route path="/" element={<App />}>
-      <Route path="useState" element={<UseStatePages />} />
-    </Route>
-  )
-);
+import router from './router/router'
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
