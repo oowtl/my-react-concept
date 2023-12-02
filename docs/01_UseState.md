@@ -270,7 +270,14 @@ function AvoidReCreateComponent () {
 - 리스트를 렌더링할 때 키 속성을 사용하지만, 다른 목적으로도 사용할 수 있다.
 - 컴포넌트에 다른 키를 넣어주는 것을 통해서 컴포넌트를 리셋시킬 수 있다.
   - 키가 변경될 때 리액트는 컴포넌트를 새로 생성해서 변경한다.
-- 추가사항 : [preserving and resetting state](https://react.dev/learn/preserving-and-resetting-state)
+
+### preserving and resetting state
+
+1. 리액트에서 같은 컴포넌트 두개를 같은 곳에서 렌더링하면 컴포넌트는 같을 지라도 다른 상태값을 유지한다.
+2. 렌더링된 컴포넌트의 상태는 독립적이다. (같은 컴포넌트라도 생성되면 상태값은 영향 받지 않는다.)
+3. 만약에 같은 위치에 같은 컴포넌트가 렌더링된다면 상태를 공유하게 된다.
+
+추가사항 : [preserving and resetting state](https://react.dev/learn/preserving-and-resetting-state)
 
 
 
@@ -290,3 +297,85 @@ Ex) Props 가 변경될 때, 상태변수를 바꾸고 싶을 수도 있다.
 - 만약에 전체 컴포넌트 트리를 리셋하고 싶다면 컴포넌트에 다른 키를 넣어준다.
 - 가능하다면 이벤트 핸들러를 통해서 관련 상태를 업데이트 한다.
 
+
+
+변수를 상속받는 자식 컴포넌트에서 `useState()` 를 통해서 이전 변수값을 저장하고 있다가 변수가 업데이트되고 렌더링을 트리거할 때 다시 변수를 저장하는 것을 통해서 이전 렌더링의 값을 저장할 수 있다.
+
+
+
+# TroubleShooting
+
+
+
+## 상태를 업데이트했는데도 이전 상태를 얻는 경우
+
+```jsx
+import { useState } from 'react';
+
+function OldValueComponent () {
+  const [count, setCount] = useState(0);
+  
+  const handleOldValue = (e) => {
+    e.preventDefuault();
+    
+    console.log(count) // 0
+    setCount(count + 1);
+    console.log(count) // 0
+    
+    setTimeout(() => {
+ 			console.log(count)  // 0   
+    }, 5000)
+  };
+}
+```
+
+리액트에서 함수를 실행할 때 변수는 스냅샷과 같다. 렌더링이 끝날 때까지 실행된 함수의 변수는 변하지 않는다.
+
+렌더링이 끝난 이후에 변수를 호출하면 변경된 것을 확인할 수 있다.
+
+```jsx
+// 다음 상태가 필요한 경우에는 미리 저장해서 사용하는 방법이 있다.
+
+function handleOldValue = () => {
+  const nextCount = count + 1
+  
+  console.log(count) // 0
+  console.log(nextCount) // 1
+}
+```
+
+
+
+## 상태를 업데이트 했는데, 화면에는 업데이트되지 않는 경우
+
+리액트는 `Object.is()` 를 통해서 비교하는데 이전 상태와 다음 상태가 같으면 업데이트를 무시한다.
+
+이런 현상은 보통 Array, Object 에 주로 발생한다.
+
+```jsx
+// 하면 안되는 상황
+obj.x = 10;
+setObj(obj)
+```
+
+기존 객체를 그래도 업데이트했기 때문에 리액트는 이러한 업데이트를 무시한다.
+
+```jsx
+// 의도된 코드 
+
+// Object
+setObj({
+	...,
+	x: 10
+})
+
+// Array
+setArray([
+  ...,
+  10
+])
+```
+
+Array 나 Object 의 주소값을 변경하는 것을 통해서 리액트의 업데이트를 트리거할 수 있다.
+
+`map()`, `filter()` 와 같은 함수로도 가능하다.
