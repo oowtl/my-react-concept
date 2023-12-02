@@ -41,6 +41,8 @@ function StateComponent () {
   - 초기화 함수가 순수한 경우에는 동작에 영향을 주지 않는다.
   - 두번 호출된 것에서 하나는 무시된다.
 
+
+
 ## setSomething(nextState)
 
 useState에서 반환된 set 함수를 사용하면 상태를 다른 값으로 업데이트하고 다시 렌더링을 트리거할 수 있는 함수
@@ -97,9 +99,11 @@ function StateComponent () {
   - 만약 업데이트 함수가 순수하다면 이 동작에 영향을 받지 않을 것이다.
   - 호출된 결과 중 하나는 무시될 것이다.
 
+
+
 # 사용하는 방법
 
-## Adding state to a component
+## 컴포넌트에 상태 추가하기
 
 ```jsx
 import { useStaet } from 'react';
@@ -132,9 +136,9 @@ function MyStateComponent () {
 - `set()` 함수를 호출하더라도 이미 실행된 코드 내에서 상태 값이 변경되지는 않는다.
   - useState 를 통해서 시작된 렌더링을 통해서 반환된 것에 의해서 영향을 받는다. (= 렌더링하는 시점의 상태값을 참조한다.)
 
-## Updating state based on previous state
+## 이전 상태를 기준으로 다음 상태를 업데이트 하는 방법
 
-### Passing Next State
+### setState 함수에 다음 상태를 넣어서 업데이트 하기
 
 ```jsx
 import { useState } from 'react';
@@ -153,7 +157,7 @@ function UpdateStateComponent () {
 
 - `set()`함수를 호출하더라도 이미 실행된 코드 내에서 상태값이 변경되지는 않기 때문에 `setAge(30+1)` 이 반복적으로 실행된 것이다.
 
-### Passing updator Function
+### setState 함수에 업데이트 함수를 넣어서 업데이트 하기
 
 ```jsx
 import { useState } from 'react';
@@ -194,7 +198,7 @@ function PendingStateComponent () {
 
 
 
-## Updating objects and arrays in state
+## 배열이나 객체를 업데이트하는 방법
 
 - 리액트에서의 상태는 어떤 타입이던지 가능하다.
 - 리액트에서의 상태는 읽기 전용이다.
@@ -236,7 +240,7 @@ function MutateObjectComponent () {
 
 
 
-## Avoiding recreating the initial state
+## 초기 상태를 다시 생성하는 것을 피하는 방법
 
 ### 문제점
 
@@ -265,7 +269,9 @@ function AvoidReCreateComponent () {
 - `createInitialSetTodos` 를 넣어주는 것으로 해결할 수 있다.
   함수를 호출한 결과값이 아닌 함수명을 호출하는 것을 통해서 React 는 초기 렌더링을 할때만 함수를 호출하고 이후의 렌더링에는 함수를 호출하지 않을 수 있다.
 
-## Resetting state with a key
+
+
+## 키를 통해서 컴포넌트의 상태를 초기화하는 방법
 
 - 리스트를 렌더링할 때 키 속성을 사용하지만, 다른 목적으로도 사용할 수 있다.
 - 컴포넌트에 다른 키를 넣어주는 것을 통해서 컴포넌트를 리셋시킬 수 있다.
@@ -281,7 +287,7 @@ function AvoidReCreateComponent () {
 
 
 
-## Storing information from previous renders
+## 이전 렌더링에서 정보(상태)를 저장하는 방법
 
 보통 이벤트 핸들러를 통해서 상태를 업데이트한다.
 
@@ -379,3 +385,109 @@ setArray([
 Array 나 Object 의 주소값을 변경하는 것을 통해서 리액트의 업데이트를 트리거할 수 있다.
 
 `map()`, `filter()` 와 같은 함수로도 가능하다.
+
+
+
+## `"Too many re-renders"` 에러가 발생하는 경우
+
+`Too many re-renders. React limits the number of renders to prevent an infinite loop.` 에러가 발생하는 경우
+
+일반적인 경우에는 렌더링전에 무조건적으로 상태를 셋팅하는 것을 의미한다.
+
+렌더링 -> 상태 설정(렌더링 트리거) -> 렌더링 -> 상태 설정(렌더링 트리거) 를 하는 루프에 빠져있다는 것을 의미한다.
+
+이러한 에러는 보통 이벤트 핸들러에서 자주 발생하는 실수이다.
+
+```jsx
+/*
+ * Wrong Case
+ * 1. 렌더링하는 중에 handlerClick() 함수를 호출한다.
+ * 2. handleClick() 함수는 상태를 변경한다. == 렌더링 트리거
+ * 3. 렌더링하는 중에 handlerClick() 함수를 호출한다.
+*/ 
+return <button onClick={handleClick()}>Click Handler</button>
+
+/*
+ * Correct Case
+*/
+
+// event 객체도 받아진다.
+return <button onClick={handleClick}>Click Handler</button>
+
+return <button onClick={(e) => handleClick(e)}>Click Handler</button>
+// parameter 를 받는 메서드라면 맨뒤에 이벤트 객체를 넣어준다.
+return <button onClick={(e) => handleClick(parameter, e)}>Click Handler</button>
+```
+
+
+
+
+
+## 초기화 함수나 업데이트 함수가 두 번씩 동작하는 경우
+
+Strict Mode 에서 리액트는 일부 함수를 두 번씩 호출할 것입니다.
+
+```jsx
+import { useState } from 'react';
+
+function TodoList () {
+  
+  const [todos, setTodos] = useState(() => {
+    // 이 초기화 함수는 초기화하는 동안에 두 번 실행될 것이다.
+    return createTodos()
+  })
+  
+  function handleClick() {
+    setTodos(prevTodos => {
+      // 이 업데이트 함수는 실행될 때마다(클릭 시) 두 번씩 실행될 것이다.
+      return [...prevTodos, createTodos()]
+    })
+  }
+}
+```
+
+이 동작은 개발 모드에서 동작하는 것인데 컴포넌트를 순수하게 만들어주는데 도움을 준다.
+
+리액트는 호출을 두 번해서 하나를 사용하고 하나는 무시하는데 컴포넌트와 초기화 함수, 업데이트 함수가 순수하다면 영향을 주지 않을 것이라고 한다.
+
+하지만 컴포넌트와 초기화 함수, 업데이트 함수가 순수하지 않다면 이러한 동작이 실수를 바로잡는데 도움이 될 것이다.
+
+컴포넌트, 초기화함수, 업데이트 함수는 순수해야한다 .
+
+이벤트 핸들러는 순수할 필요가 없기 때문에 두번 호출 하지 않는다.
+
+
+
+## 상태함수를 사용하는데 호출되는 경우
+
+```jsx
+import { useState } from 'react';
+
+function CallStateComponent () {
+  // Wrong Case
+  const [count, setCount] = useState(countFunction());
+  
+  // Correct Case
+  const [count, setCount] = useState(countFunction);
+  const [count, setCount] = useState(() => countFunction); 
+}
+
+function CallSetStateComponent () {
+  // Wrong Case
+  function handleClick () {
+    setCount(countFunction());
+  }
+  
+  
+  // Correct Case
+  function handleClick () {
+    setCount(countFunction)
+  }
+  function handleClick () {
+    setCount(() => countFunction)
+  }
+}
+
+```
+
+- 선언하는데 호출하지 않도록 주의해서 사용한다.
