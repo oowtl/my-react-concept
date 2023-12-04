@@ -6,14 +6,19 @@
 
 
 
-# 함수
+# 함수에 대한 설명
 
-## useState(initialState)
+## `useState(initialState)`
 
 ```jsx
 import { useState } from 'react';
 
 function StateComponent () {
+  const [state, setState] = useState(initialState);
+  // state : 상태
+  // setState : 상태를 업데이트하는 함수
+  // useState(initialState) : initialState로 초기화
+  
   const [age, setAge] = useState(30);
   const [name, setName] = useState('Developer');
 }
@@ -22,28 +27,29 @@ function StateComponent () {
 ### Parameters
 
 - `initialState`
-  - 최초의 상태값을 넣어둔다.
-  - 어떤 타입이던지 넣어둘 수 있다.
-  - 최초 렌더링 이후 무시된다.
+  - 최초 렌더링 시 넣어둘 상태값
+  - 어떤 타입이던지 넣어둘 수 있음
+  - 최초 렌더링 이후 무시
 
 ### Returns
 
-1. 현재의 상태 : 첫 번째 렌더링할 때는 `initialState` 에 전달한 값과 동일한 값이 렌더링 된다.
-2. set 함수 : 다른 값으로 상태를 업데이트하거나 렌더링을 다시하도록 하는 함수이다.
+1. 최초 렌더링 시,  `initialState` 에 전달한 값과 동일한 값이 렌더링 된다.
+2. `setSomething(nextState)` : nextState 값으로 상태를 업데이트하고 렌더링을 트리거하는 함수
 
 ### 주의사항
 
 - `useState`는 훅으로서 컴포넌트의 최상단에 선언할 수 있다.
 - 조건문이나 반복문 안에 선언할 수 없다.
-- 조건문이나 반복문 안에 선언하고 싶다면, 새로운 컴포넌트를 추출해서 새로운 컴포넌트 안으로 옮겨야 한다.
+- 조건문이나 반복문 안에 선언하고 싶다면, 새로운 컴포넌트로 추출해서 새로운 컴포넌트 안으로 옮겨야 한다.
 - Strict mode에서 리액트는 실수로 발생한 것을 찾는데 도움을 주기 위해서 초기화 함수를 두 번 호출한다.
   - 개발 모드에서만 적용되며 프로덕션 모드에서는 영향을 주지 않는다.
-  - 초기화 함수가 순수한 경우에는 동작에 영향을 주지 않는다.
-  - 두번 호출된 것에서 하나는 무시된다.
+    초기화 함수가 순수한 경우에는 동작에 영향을 주지 않는다.
+    두번 호출된 것에서 하나는 무시된다.
+  - 리액트는 컴포넌트를 순수하게 만드는 것을 권장한다.
 
 
 
-## setSomething(nextState)
+## `setSomething(nextState)`
 
 useState에서 반환된 set 함수를 사용하면 상태를 다른 값으로 업데이트하고 다시 렌더링을 트리거할 수 있는 함수
 
@@ -66,7 +72,7 @@ function StateComponent () {
 ### Parameters
 
 - `nextState`
-  - 변경하길 원하는 상태값을 말한다.
+  - 변경하길 원하는 상태값
   - 함수를 `nextState`로 전달하면 updater 함수로 다루어진다.
   - 순수해야 하며, `nextState`를 반환해야만 한다.
   - 리액트는 queue 에 updater 함수를 넣을 것이고 컴포넌트를 다시 랜더링한다.
@@ -103,7 +109,7 @@ function StateComponent () {
 
 # 사용하는 방법
 
-## 컴포넌트에 상태 추가하기
+## 컴포넌트에 상태 추가하는 방법
 
 ```jsx
 import { useStaet } from 'react';
@@ -135,6 +141,8 @@ function MyStateComponent () {
 
 - `set()` 함수를 호출하더라도 이미 실행된 코드 내에서 상태 값이 변경되지는 않는다.
   - useState 를 통해서 시작된 렌더링을 통해서 반환된 것에 의해서 영향을 받는다. (= 렌더링하는 시점의 상태값을 참조한다.)
+
+
 
 ## 이전 상태를 기준으로 다음 상태를 업데이트 하는 방법
 
